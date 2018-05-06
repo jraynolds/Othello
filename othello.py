@@ -29,14 +29,14 @@ from functools import partial
 # CONSTANTS
 ################################################################################
 
-DEFAULT_PLAYER1_COLOR = "#000000" # white
-DEFAULT_PLAYER2_COLOR = "#ffffff" # black
+DEFAULT_PLAYER1_COLOR = "#ffffff" # black
+DEFAULT_PLAYER2_COLOR = "#000000" # white
 BOARD_COLOR = "#00ff00" # green
 BACKGROUND_COLOR = "#000000" # black
 SQUARE_SIZE = 75
 DEFAULT_AI_LEVEL = 4
 DEFAULT_AI_FILE = "othelloplayer"
-PLAYERS = {2: "White", 1: "Black"}
+PLAYERS = {1: "White", 2: "Black"}
 
 HALF_SQUARE = SQUARE_SIZE // 2
 
@@ -106,7 +106,7 @@ try:
 			self._place_disc((middle_top_left[1] + 1, middle_top_left[0]), 2, False)
 
 			# black player goes 1st
-			self._set_player(1)
+			self._set_player(2)
 					
 		# actually make a play--modifies the board, and switches turns if game_started
 		def _place_disc(self, location, player_num = None, game_started = True):
@@ -397,7 +397,10 @@ if do_print_help:
 	sys.exit(1)
 
 # load up the player classes
-players = (load_player(1, player_files[0], levels[0]), load_player(2, player_files[1], levels[1]))
+if random.random() > .5:
+	players = (load_player(2, player_files[1], levels[1]), load_player(1, player_files[0], levels[0]))
+else :
+	players = (load_player(1, player_files[0], levels[0]), load_player(2, player_files[1], levels[1]))
 
 # hit it!
 if do_graphics:
