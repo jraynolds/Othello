@@ -77,7 +77,7 @@ try:
 			self.overlay_image = self._make_board_image()
 			self.disc1_image = self._make_disc_image(player_color_tuples[1])
 			self.disc2_image = self._make_disc_image(player_color_tuples[2])
-			self.wm_iconphoto(self, App._make_icon(player_color_tuples[1], player_color_tuples[2]))
+			self.wm_iconphoto(self, App._make_icon())
 			
 			# other data structures
 			self.board = [[0 for x in range(grid_size)] for y in range(grid_size)]
@@ -113,7 +113,6 @@ try:
 			# Clear all buttons
 			for button in self.buttons:
 				button.destroy()
-				# button.place_forget()
 			self.buttons = []
 
 			if player_num == None: player_num = self.current_player
@@ -142,9 +141,9 @@ try:
 
 			winstring = " player wins,"
 			if tokens[1] > tokens[2]:
-				winstring = "Black" + winstring
-			elif tokens[2] > tokens[1]:
 				winstring = "White" + winstring
+			elif tokens[2] > tokens[1]:
+				winstring = "Black" + winstring
 			else :
 				winstring = "tie game,"
 			winstring += " with " + str(max(tokens[1], tokens[2])) + " tokens!"
@@ -204,8 +203,13 @@ try:
 			self.current_player = player_id
 			valid_moves = self._get_valid_moves(player_id)
 			if not valid_moves:
-				self._declare_victory()
-				return
+				# print("player " + str(player_id) + ", " + PLAYERS[player_id] + ", has no moves.")
+				if not self._get_valid_moves(1) and not self._get_valid_moves(2):
+					self._declare_victory()
+					return
+				else :
+					self._swap_player()
+					return
 
 			# if the next player is human, set the banner & activate the appropriate buttons
 			if type(self.players[player_id]) == HumanPlayer:
@@ -288,12 +292,12 @@ try:
 
 		# make an 64x64 image of a black disc and a white disc
 		@staticmethod
-		def _make_icon(color1, color2):
+		def _make_icon():
 			im = Image.new("RGBA", (100,100), (0,0,0,0))
 			draw = ImageDraw.Draw(im)
-			draw.ellipse((0, 0, 70, 70), color1)
-			draw.ellipse((30, 30, 100, 100), color1) # the outline for the white disc
-			draw.ellipse((34, 34, 96, 96), color2)
+			draw.ellipse((0, 0, 70, 70), "black")
+			draw.ellipse((30, 30, 100, 100), "black") # the outline for the white disc
+			draw.ellipse((34, 34, 96, 96), "white")
 			return ImageTk.PhotoImage(im.resize((64, 64), resample=Image.BICUBIC))
 			
 # error to print out if we couldn't load up graphics
@@ -398,7 +402,7 @@ if do_print_help:
 
 # load up the player classes
 if random.random() > .5:
-	players = (load_player(2, player_files[1], levels[1]), load_player(1, player_files[0], levels[0]))
+	players = (load_player(1, player_files[1], levels[1]), load_player(2, player_files[0], levels[0]))
 else :
 	players = (load_player(1, player_files[0], levels[0]), load_player(2, player_files[1], levels[1]))
 
